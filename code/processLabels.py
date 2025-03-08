@@ -13,8 +13,8 @@ def processLabels(filepath,output):
     # Preprocess the data by finding the image center, length, and width
     data['center_x'] = (data['x1'] + data['x2']) / 2
     data['center_y'] = (data['y1'] + data['y2']) / 2
-    data['width'] = data['x2'] - data['x1']
-    data['height'] = data['y2'] - data['y1']
+    data['width'] = abs(data['x2'] - data['x1'])
+    data['height'] = abs(data['y2'] - data['y1'])
 
     # Normalize the values by dividing by 640 (images are 640x640)
     data['center_x'] /= 640
@@ -22,6 +22,12 @@ def processLabels(filepath,output):
     data['width'] /= 640
     data['height'] /= 640
     
+    # Remove the '.jpg' from the file column
+    data['file'] = data['file'].str.replace('.jpg$', '', regex=True)
+
+    # alter classes for use with yolo
+    data['class'] = data['class'].replace({1: 0, 2: 1})
+
     # dropping extra columns
     data = data.drop(columns=['x1', 'y1', 'x2', 'y2'])
 
